@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.js"></script>
+    <style></style>
+</head>
+<body  text="#ffffff">
+</body>
+</html>
+
+<script>
+
+        $(document).ready(function () {
+            document.body.style.background = " url('images/music1.jpg') no-repeat center fixed";
+            document.body.style.backgroundSize = "cover";
+
+//change button into function 
+            var playAudio = document.createElement('button');
+            playAudio.innerHTML = "Play Audio";
+            playAudio.setAttribute('id', 'playAudio');
+            document.body.append(playAudio);
+
+            var Download = document.createElement('button');
+            Download.innerHTML = "Download";
+            Download.setAttribute('id', 'download');
+            document.body.append(Download);
+
+            var input = document.createElement('input');
+            input.setAttribute('type', 'file');
+            input.setAttribute('id', 'upload');
+            document.body.append(input);
+
+
+
+
+            playAudio.addEventListener('click', function () {
+                if (document.getElementById('audio')) {
+                    document.getElementById('audio').play();
+                }
+            });
+
+            Download.addEventListener("click", function () {
+                if (document.getElementById('audio')) {
+                    const a = Object.assign(document.createElement('a'), { href: document.getElementById('audio').src, download: "newAudio.mp3" });
+                    document.body.appendChild(a);
+                    a.click();
+                    a.remove();
+
+                }
+            })
+
+            document.getElementById("upload").addEventListener("change", function (event) {
+
+                if (document.getElementById("minimum_span_label")) {
+                    document.getElementById("minimum_span_label").remove();
+                    document.getElementById("maximum_span_label").remove();
+                    document.getElementById("div1").remove();
+                    document.getElementById("div2").remove();
+                    document.getElementById("div3").remove();
+                    document.getElementById("audio1").remove();
+                    document.getElementById("submit").remove();
+                    if (document.getElementById('audio')) {
+                        document.getElementById('audio').remove();
+                        document.getElementById('audiolabel').remove();
+                    }
+                }
+
+                var audio = document.createElement('audio');
+                audio.setAttribute("id", "audio1");
+                function insertAfter(newNode, referenceNode) {
+                    referenceNode.parentNode.insertBefore(newNode, referenceNode.nextSibling);
+                };
+
+                insertAfter(audio, document.getElementById("upload"));
+                audio.setAttribute("src", URL.createObjectURL(event.target.files[0]));
+                var audioSource = URL.createObjectURL(event.target.files[0]);
+                audio.setAttribute("controls", true);
+                audio.style.display = "flex";
+                audio.load();
+
+                var div2Boolean = false;
+                var div3Boolean = false;
+
+                var label1 = document.createElement('label');
+                label1.setAttribute("id", 'minimum_span_label');
+                label1.style.position = "absolute";
+                label1.style.margin = "20px";
+                label1.style.textAlign = "center";
+                label1.style.zIndex = "3";
+                label1.style.top = "100px";
+                label1.style.left = "0px";
+                document.body.append(label1);
+
+
+                var label2 = document.createElement('label');
+                label2.setAttribute("id", 'maximum_span_label');
+                label2.style.position = "absolute";
+                label2.style.margin = "20px";
+                label2.style.textAlign = "center";
+                label2.style.zIndex = "3";
+                label2.style.top = "100px";
+                label2.style.left = "500px";
+                document.body.append(label2);
+
+                var au = document.querySelector('audio');
+                au.onloadedmetadata = function () {
+                    var wholeAudioDuration = au.duration;
+                    wholeAudioDuration = parseInt(wholeAudioDuration);
+                    document.getElementById("minimum_span_label").innerText = "0:00";
+                    document.getElementById("maximum_span_label").innerText = `${Math.floor(wholeAudioDuration / 60)}:${Math.floor(wholeAudioDuration % 60)}`;
+                    var div1 = document.createElement('div');
+                    div1.setAttribute("id", 'div1');
+                    div1.style.width = "500px";
+                    div1.style.height = "10px";
+                    div1.style.backgroundColor = "red";
+                    div1.style.position = "absolute";
+                    div1.style.zIndex = "1";
+                    div1.style.top = "100px";
+
+
+                    var div2Boolean = false;
+                    var div3Boolean = false;
+
+
+                    var div2 = document.createElement('div');
+                    div2.setAttribute("id", 'div2');
+                    div2.style.width = "20px";
+                    div2.style.height = "10px";
+                    div2.style.backgroundColor = "blue";
+                    div2.style.position = "absolute";
+                    div2.style.zIndex = "2";
+                    div2.style.top = "100px";
+                    div2.style.left = "0px";
+
+
+                    var div3 = document.createElement('div');
+                    div3.setAttribute("id", 'div3');
+                    div3.style.width = "20px";
+                    div3.style.height = "10px";
+                    div3.style.backgroundColor = "blue";
+                    div3.style.position = "absolute";
+                    div3.style.zIndex = "2";
+                    div3.style.top = "100px";
+                    div3.style.left = "500px";
+
+                    document.body.append(label1);
+                    document.body.append(label2);
+                    document.body.append(div1);
+                    document.body.append(div2);
+                    document.body.append(div3);
+
+
+                    $('#div2').click(function (e) {
+                        div2Boolean = true;
+                        div3Boolean = false;
+                    })
+                    $('#div3').click(function (e) {
+                        div3Boolean = true;
+                        div2Boolean = false;
+                    })
+                    $('#div1').click(function (e) {
+                        if (div2Boolean) {
+                            $('#div2').animate({ left: `${e.pageX}px` });
+                            $('#minimum_span_label').animate({ left: `${e.pageX}px` },
+                                {
+                                    complete: function () {
+                                        var temp = (e.pageX / 500) * wholeAudioDuration;
+                                        document.getElementById('minimum_span_label').innerHTML = `${Math.floor(temp / 60)}:${Math.floor(temp % 60)}`;
+                                    }
+                                });
+                        }
+                        if (div3Boolean) {
+                            $('#div3').animate({ left: `${e.pageX}px` });
+                            $('#maximum_span_label').animate({ left: `${e.pageX}px` }, {
+                                complete: function () {
+                                    var temp = (e.pageX / 500) * wholeAudioDuration;
+                                    document.getElementById('maximum_span_label').innerHTML = `${Math.floor(temp / 60)}:${Math.floor(temp % 60)}`;
+                                }
+                            });
+                        }
+                    }
+                    )
+
+
+
+
+
+
+                    var button = document.createElement('button');
+                    button.setAttribute("id", "submit");
+                    button.innerHTML = "SUBMIT";
+                    button.style.position = "absolute"
+                    button.style.top = "150px";
+                    document.body.append(button);
+
+
+
+                    fetch(audioSource).then(function (response) {
+                        if (response.ok) {
+                            console.log("fetch");
+                            return response.blob();
+                        }
+                        throw new Error('Network response was not ok.');
+                    }).then(function (blob) {
+                        Blob = blob;
+                    }).catch(function (error) {
+                        console.log('There has been a problem with your fetch operation: ', error);
+                    });
+
+
+                    document.getElementById('submit').addEventListener('click', function (e) {
+                        if (document.getElementById('audio')) {
+                            document.getElementById('audio').remove();
+                            document.getElementById('audiolabel').remove();
+                        }
+                        var minArray = document.getElementById('minimum_span_label').innerText.split(":")
+                        var maxArray = document.getElementById('maximum_span_label').innerText.split(":")
+
+                        var startValue = ((parseInt(minArray[0]) * 60) + parseInt(minArray[1]));
+                        var endValue = ((parseInt(maxArray[0]) * 60) + parseInt(maxArray[1]));
+                        if (startValue > endValue) {
+                            window.alert("Start value must be less than end value");
+                        }
+                        else if (startValue === endValue) {
+                            window.alert("both can't be in same time");
+                        }
+                        else {
+                            var wholeDuration = document.querySelector('audio').duration;
+                            wholeDuration = Math.floor(wholeDuration);
+                            console.log(startValue, endValue, wholeDuration, Blob.size, Math.floor((startValue * Blob.size) / wholeDuration), Math.floor((endValue * Blob.size) / wholeDuration));
+                            var finalAudio;
+                            if (startValue === 0) {
+                                startValue = 1;
+                                endValue += 1;
+                                console.log(startValue);
+                                finalAudio = Blob.slice(Math.floor((startValue * Blob.size) / wholeDuration), Math.floor((endValue * Blob.size) / wholeDuration), Blob.type);
+                            }
+                            else {
+                                if (startValue === 1) {
+                                    startValue = 1;
+                                    endValue += 1;
+                                }
+                                if (startValue > 1) {
+                                    startValue -= 1;
+                                    endValue += 1;
+                                }
+
+
+                                finalAudio = Blob.slice(Math.floor((startValue * Blob.size) / wholeDuration), Math.floor((endValue * Blob.size) / wholeDuration), Blob.type);
+                            }
+                            window.audio = new Audio();
+                            window.audio.setAttribute("id", 'audio');
+                            window.audio.src = window.URL.createObjectURL(finalAudio);
+                            window.audio.controls = true;
+                            window.audio.style.display = 'flex';
+                            window.audio.style.position = "absolute";
+                            window.audio.style.top = "210px";
+
+                            var audioLabel = document.createElement('label');
+                            audioLabel.setAttribute("id", 'audiolabel');
+                            audioLabel.innerHTML = "new audio";
+                            audioLabel.style.position = "absolute";
+                            audioLabel.style.top = "190px";
+                            document.body.append(audioLabel);
+
+
+                            document.body.append(window.audio);
+                        }
+                    }
+                    )
+                }
+
+            }
+            );
+        }
+        );  
+
+
+
+
+</script>
